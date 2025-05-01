@@ -1,14 +1,14 @@
 trigger:
-  - main  # Trigger on pushes to main branch
+  - main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   node_version: '22.x'
-  azureSubscription: 'My-DevOps-ServiceConnection'  # Your actual service connection name
-  appName: 'ci-cd'                                  # Your App Service name
-  packageDir: '.'                                   # Root folder (change if app is in a subfolder)
+  azureSubscription: 'ci-cd-connection'   # 👈 Use the name of the actual service connection you created
+  appName: 'ci-cd'
+  packageDir: '.'
 
 steps:
   - task: UseNode@1
@@ -40,6 +40,6 @@ steps:
   - task: AzureWebApp@1
     inputs:
       azureSubscription: '$(azureSubscription)'
-      appType: 'webAppLinux'         # Linux-based App Service
+      appType: 'webAppLinux'
       appName: '$(appName)'
       package: '$(Build.ArtifactStagingDirectory)/$(appName).zip'
