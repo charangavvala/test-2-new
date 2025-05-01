@@ -2,11 +2,11 @@ trigger:
   - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: test-new-pool  # 👈 Self-hosted agent pool name
 
 variables:
   node_version: '22.x'
-  azureSubscription: 'ci-cd-connection'   # 👈 Use the name of the actual service connection you created
+  azureSubscription: 'ci-cd-connection'
   appName: 'ci-cd'
   packageDir: '.'
 
