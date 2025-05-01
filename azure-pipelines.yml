@@ -1,0 +1,45 @@
+trigger:
+  - main  # Trigger on pushes to main branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  node_version: '22.x'
+  azureSubscription: 'My-DevOps-ServiceConnection'  # Your actual service connection name
+  appName: 'ci-cd'                                  # Your App Service name
+  packageDir: '.'                                   # Root folder (change if app is in a subfolder)
+
+steps:
+  - task: UseNode@1
+    inputs:
+      version: '$(node_version)'
+
+  - script: |
+      npm install
+    displayName: 'Install dependencies'
+
+  - script: |
+      npm test
+    displayName: 'Run tests'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(packageDir)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(appName).zip'
+      replaceExistingArchive: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'drop'
+      publishLocation: 'Container'
+
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: '$(azureSubscription)'
+      appType: 'webAppLinux'         # Linux-based App Service
+      appName: '$(appName)'
+      package: '$(Build.ArtifactStagingDirectory)/$(appName).zip'
